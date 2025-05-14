@@ -1,0 +1,30 @@
+FROM diamol/maven AS builder
+    # diamol/maven Image를 로드함.
+WORKDIR /usr/src/iotd
+    # /usr/src/iotd를 작업 디렉토리로 지정
+COPY pom.xml .
+    # pom.xml을 현재 디렉토리로 복사하라는 의미
+RUN mvn -B dependency:go-offline
+    # mvn => Maven 명령어 실행
+    # -B : BatchMode로 전환한다. (비대화식 모드로 실행되도록함) 
+    # dependency:go-offline : dependency 플러그인에서 제공하는 goal인데 오프라인 상태로도 빌드할 수 있게 준비하는 명령.
+COPY . .
+    # 상위 디렉토리를 복사하여 모든 하위 디렉토리와 속해있는  파일을 전부 복사한다
+RUN mvn package
+    # mvn package => Maven 명령어 실행
+    # 어플리케이션을 빌드하고 패키징하라는 의미이다
+        # input : JavaSourceCode
+        # Output : .Jar 포맷으로 패키징된 JavaApplication
+FROM diamol/openjdk
+    # diamol/openjdk Image를 로드함.
+WORKDIR /app
+    # /app을 작업 디렉토리로 지정
+COPY --from=builder /usr/src/iotd/target/iotd-service-0.1.0.jar .
+    # Builder단계에서 패키징된 .jar파일을 최종 이미지에 복사하는 명령
+EXPOSE 80
+    # 외부와 통신할 때 사용할 포트를 Docker에게 알려주는데 80번을 사용한다고 알리겠다는 명령어
+ENTRYPOINT ["java", "-jar", "/app/iotd-service-0.1.0.jar"]
+    # ENTRYPOINT는 컨테이너가 실행될 때 반드시 실행할 명령이다.
+    # java 런타임으로 /app/iotd-service-0.1.0.jar을 실행하라는뜻
+    ★ 왜 "java", "-jar", "/app/iotd-service-0.1.0.jar"로 지정했을까?
+        # Exec형식으로 ENTRYPOINT를 작성한 것인데 명확하고 안전하고 신호가 올바르게 전달되기 위해서 이렇게 작성된것이다.
