@@ -1,0 +1,21 @@
+FROM diamol/node AS builder
+    # DockerHub에서 diamol/node를 pulling 해온다.
+WORKDIR /src
+    # 작업디렉토리를 /src로 지정함
+COPY src/package.json .
+    # src폴더의 package.json을 현재 디렉토리에 복사한다.
+RUN npm install
+    # npm을 install하도록 명령한다.
+
+# app
+FROM diamol/node
+    # DockerHub에서 pulling을 했기 때문에 Caching된다
+EXPOSE 80
+    # 80포트를 사용한다고 명시하는 명령어
+CMD ["node", "server.js"]
+    # 컨테이너가 실행될 때 기본적으로 사용하는 명령어이고 "node server.js"를 실행한다
+WORKDIR /app
+    # 작업디렉토리를 /app으로 지정한다
+COPY --from=builder /src/node_modules/ /app/node_modules/
+    # 
+COPY src/ .
