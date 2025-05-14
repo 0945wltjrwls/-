@@ -9,7 +9,7 @@ RUN mvn -B dependency:go-offline
     # -B : BatchMode로 전환한다. (비대화식 모드로 실행되도록함) 
     # dependency:go-offline : dependency 플러그인에서 제공하는 goal인데 오프라인 상태로도 빌드할 수 있게 준비하는 명령.
 COPY . .
-    # 상위 디렉토리를 복사하여 모든 하위 디렉토리와 속해있는  파일을 전부 복사한다
+    # 상위 디렉토리를 복사하여 모든 하위 디렉토리와 속해있는 파일을 전부 복사한다
 RUN mvn package
     # mvn package => Maven 명령어 실행
     # 어플리케이션을 빌드하고 패키징하라는 의미이다
