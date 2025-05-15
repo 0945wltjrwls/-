@@ -3,9 +3,9 @@ FROM diamol/node AS builder
 WORKDIR /src
     # 작업디렉토리를 /src로 지정함
 COPY src/package.json .
-    # src폴더의 package.json을 현재 디렉토리에 복사한다.
+    # src폴더의 package.json을 현재 디렉토리에 복사한다
 RUN npm install
-    # npm을 install하도록 명령한다.
+    # npm을 install하도록 명령한다
 
 # app
 FROM diamol/node
@@ -17,5 +17,6 @@ CMD ["node", "server.js"]
 WORKDIR /app
     # 작업디렉토리를 /app으로 지정한다
 COPY --from=builder /src/node_modules/ /app/node_modules/
-    # 
+    # 이전 빌드 단계 (AS builder)에서 /src/node_module을 /app/node_module에 복사한다
 COPY src/ .
+    # src/ 디렉토리의 전체 내용을 현재 컨테이너의 작업 디렉토리에 복사한다
