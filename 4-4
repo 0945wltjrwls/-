@@ -1,0 +1,27 @@
+FROM diamoi/golang AS Builder
+    # diamol/golang 이미지를 사용해 첫번째 스테이지를 시작함.
+COPY main.go .
+    #  main.go를 현재 디렉토리로 복사한다
+RUN go Build -o /server
+    # golang 명령어를 실행한다
+        # go 프로그램을 컴파일 하여 실행가능한 바이너리를 만들고 출력파일의 경로를 /server로 지정한다
+
+# app
+FROM diamol/base
+    # diamol/base 이미지를 기반으로 최종 런타임 이미지 생성
+ENV IMAGE_API_URL="http://iotd/image" \
+    ACCESS_API_URL="http://accesslog/access-log
+    # 환경변수 IMAGE_API_URL을 http://iotd/image로 지정한다
+    # 환경변수 ACCESS_API_URL을 http://accesslog/access-log로 지정한다
+
+CMD ["/web/server"]
+    # 컨테이너가 시작할때 
+  
+WORKDIR web
+    # 작업 디렉토리를 /web 디렉토리를 지정하여 이후 명령은 /web 디렉토리 내에서 실행된다.
+COPY index.html .
+    # index.html을 /web/index.html로 복사한다 
+COPY --from=builder /server .
+    # Builder 스테이지에서 /server을 /web/server로 복사한다
+RUN chmod +X server
+    # 실행 권한을 부여한다.
